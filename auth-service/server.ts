@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import {connectDB} from './config/db.connect';
+import logger from "./utils/logger";
 
 dotenv.config();
 
@@ -19,21 +20,21 @@ app.use(express.json({ limit: "1mb" }));
       await connectDB(); 
   
       const server = app.listen(PORT, () => {
-        console.log(`Auth Server is running on http://localhost:${PORT}`);
+        logger.info(`Auth Server is running on http://localhost:${PORT}`);
       });
 
       server.keepAliveTimeout = 3000; 
   
       process.on('SIGTERM', () => {
-        console.log('SIGTERM signal received: closing HTTP server');
+        logger.info('SIGTERM signal received: closing HTTP server');
         server.close(() => {
-          console.log('HTTP server closed');
+          logger.info('HTTP server closed');
           process.exit(0);
         });
       });
   
     } catch (error) {
-      console.error('Failed to start server:', error);
+      logger.error('Failed to start server:', error);
       process.exit(1);
     }
 })()

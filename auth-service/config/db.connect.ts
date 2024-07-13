@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
+import logger from "../utils/logger";
 
 dotenv.config();
 
@@ -12,32 +13,32 @@ export const connectDB = (): Promise<string> => {
 
         mongoose.connect(process.env.DB_URI)
             .then(() => {
-                console.log("MongoDB connected successfully");
+                logger.info("MongoDB connected successfully");
                 resolve("Database connection established");
             })
             .catch((error) => {
-                console.error("MongoDB connection error:", error);
+                logger.error("MongoDB connection error:", error);
                 reject(error);
             });
 
         const connection = mongoose.connection;
 
         connection.on("error", (error) => {
-            console.error("MongoDB connection error:", error);
+            logger.error("MongoDB connection error:", error);
             reject(error);
         });
 
         connection.on("disconnected", () => {
-            console.log("MongoDB disconnected");
+            logger.info("MongoDB disconnected");
         });
 
         process.on('SIGINT', async () => {
             try {
                 await connection.close();
-                console.log('MongoDB connection closed due to app termination');
+                logger.info('MongoDB connection closed due to app termination');
                 process.exit(0);
             } catch (error) {
-                console.error('Error during MongoDB disconnection:', error);
+                logger.error('Error during MongoDB disconnection:', error);
                 process.exit(1);
             }
         });
