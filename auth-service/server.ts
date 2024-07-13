@@ -1,7 +1,9 @@
-import express from "express";
+import express, { type ErrorRequestHandler } from "express";
 import dotenv from "dotenv";
 import {connectDB} from './config/db.connect';
 import logger from "./utils/logger";
+import globalError from "./utils/globalError";
+import unknownRoute from "./utils/unknownRoute";
 
 dotenv.config();
 
@@ -13,6 +15,18 @@ const PORT = process.env.PORT || 3002;
 
 //middlewares
 app.use(express.json({ limit: "1mb" }));
+
+
+//routes
+
+
+
+
+//unknown route 
+app.use(unknownRoute)
+
+//global error
+app.use(globalError as ErrorRequestHandler);
 
 
 (async () => {
