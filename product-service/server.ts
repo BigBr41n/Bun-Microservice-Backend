@@ -4,6 +4,7 @@ import {connectDB} from './config/db.connect';
 import logger from "./utils/logger";
 import globalError from "./utils/globalError";
 import unknownRoute from "./utils/unknownRoute";
+import productRoutes from './src/routes';
 
 
 dotenv.config();
@@ -20,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 //routes
-//
+app.use("/v1", productRoutes);
 
 
 
