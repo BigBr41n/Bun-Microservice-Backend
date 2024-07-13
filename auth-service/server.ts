@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import {connectDB} from './config/db.connect';
 
 dotenv.config();
 
@@ -7,7 +8,7 @@ dotenv.config();
 const app = express();
 
 //port
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 
 //middlewares
 app.use(express.json({ limit: "1mb" }));
@@ -15,7 +16,7 @@ app.use(express.json({ limit: "1mb" }));
 
 (async () => {
     try {
-      // await connect(); // when database connection is ready
+      await connectDB(); 
   
       const server = app.listen(PORT, () => {
         console.log(`Auth Server is running on http://localhost:${PORT}`);
