@@ -12,7 +12,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@types/amqplib": "^0.10.5",
     "@types/bcryptjs": "^2.4.6",
+    "amqplib": "^0.10.4",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
