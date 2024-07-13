@@ -4,6 +4,7 @@ import {connectDB} from './config/db.connect';
 import logger from "./utils/logger";
 import globalError from "./utils/globalError";
 import unknownRoute from "./utils/unknownRoute";
+import authRoutes from './src/routes'
 
 dotenv.config();
 
@@ -14,11 +15,12 @@ const app = express();
 const PORT = process.env.PORT || 3002;
 
 //middlewares
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 //routes
-
+app.use("/v1" , authRoutes);
 
 
 

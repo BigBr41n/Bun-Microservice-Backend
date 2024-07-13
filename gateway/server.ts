@@ -19,7 +19,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'], //till now the only allowed headers
 }));
 
 app.use(helmet.noSniff()); // Disable browser sniffing for XSS protection
@@ -39,20 +38,40 @@ if (process.env.NODE_ENV === 'development') {
 
 
 app.use('/api/v1/auth', createProxyMiddleware({
-  target: `http://localhost:${process.env.AUTH_PORT}`,  // Auth Service 
+  target: `http://localhost:${process.env.AUTH_PORT}/v1`,  // Auth Service 
   changeOrigin: true,
   pathRewrite: {
-    '^/api/v1/auth': '/v1/',  // Rewrites /api/v1/users to /v1/
+    '^/api/v1/auth': '/',  // Rewrites /api/v1/users to /
+  },
+  on: {
+    proxyReq: (proxyReq: any, req: any, res: any) => {
+      if (req.body && Object.keys(req.body).length > 0) {
+        const bodyData = JSON.stringify(req.body);
+        proxyReq.setHeader('Content-Type', 'application/json');
+        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+        proxyReq.write(bodyData);
+      }
+    },
   },
 }));
 
 
 
 app.use('/api/v1/products', createProxyMiddleware({
-  target: `http://localhost:${process.env.PRODUCT_PORT}`,  // Products Service
+  target: `http://localhost:${process.env.PRODUCT_PORT}/v1`,  // Products Service
   changeOrigin: true,
   pathRewrite: {
-    '^/api/v1/products': '/v1/',  // Rewrites /api/v1/products to /v1/
+    '^/api/v1/products': '/',  // Rewrites /api/v1/products to /
+  },
+  on: {
+    proxyReq: (proxyReq: any, req: any, res: any) => {
+      if (req.body && Object.keys(req.body).length > 0) {
+        const bodyData = JSON.stringify(req.body);
+        proxyReq.setHeader('Content-Type', 'application/json');
+        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+        proxyReq.write(bodyData);
+      }
+    },
   },
 }));
 
@@ -60,10 +79,20 @@ app.use('/api/v1/products', createProxyMiddleware({
 
 
 app.use('/api/v1/orders', createProxyMiddleware({
-    target: `http://localhost:${process.env.ORDER_PORT}`,  // Orders Service
+    target: `http://localhost:${process.env.ORDER_PORT}/v1`,  // Orders Service
     changeOrigin: true,
     pathRewrite: {
-      '^/api/v1/orders': '/v1/',  // Rewrites /api/v1/products to /v1/
+      '^/api/v1/orders': '/',  // Rewrites /api/v1/orders to /
+    },
+    on: {
+      proxyReq: (proxyReq: any, req: any, res: any) => {
+        if (req.body && Object.keys(req.body).length > 0) {
+          const bodyData = JSON.stringify(req.body);
+          proxyReq.setHeader('Content-Type', 'application/json');
+          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+          proxyReq.write(bodyData);
+        }
+      },
     },
 }));
 

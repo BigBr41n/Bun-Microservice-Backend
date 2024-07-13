@@ -19,7 +19,7 @@ class AuthService {
    * @returns {Promise<string>} - The created user document
    * @throws {ApiError} - if the user registration failed
    */
-  static async signUp(userData: Partial<IUserDocument>): Promise< string > {
+  static async signUp(userData: {email:string , name : string , password: string}): Promise< string > {
     try {
       const user = await User.findOne({ email: userData.email! });
       if (user) throw new ApiError("Email already exists", 401);

@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import logger from "../utils/logger";
+import {ApiError} from "./ApiError";
 
 
 const globalError: ErrorRequestHandler = (
