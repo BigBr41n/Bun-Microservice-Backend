@@ -5,6 +5,7 @@ import morgan from'morgan';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv'
 import globalError from './utils/globalError';
+import { globalLimiter, authLimiter } from './middlewares/rate-limiter';
 dotenv.config(); 
 
 
@@ -36,8 +37,11 @@ if (process.env.NODE_ENV === 'development') {
 
 
 
+//global rate limit
+app.use(globalLimiter);
 
-app.use('/api/v1/auth', createProxyMiddleware({
+
+app.use('/api/v1/auth', authLimiter , createProxyMiddleware({
   target: `http://localhost:${process.env.AUTH_PORT}/v1`,  // Auth Service 
   changeOrigin: true,
   pathRewrite: {
