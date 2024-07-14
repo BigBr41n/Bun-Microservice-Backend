@@ -5,8 +5,8 @@ dotenv.config();
 
 
 interface EmailTemplateProps {
-  products: string[];
-  username: string;
+  orders: any;
+  email: string;
 }
 
 
@@ -27,13 +27,11 @@ const transporter: Transporter = nodemailer.createTransport({
 
 
 
-export const inform = async (email: string, username: string, products: string[]) => {
-  const emailTemplate = ({ products, username }: EmailTemplateProps) => {
+export const inform = async (email: string, orders: any) => {
+  const emailTemplate = ({ orders, email }: EmailTemplateProps) => {
     return `
-        <h1>Welcome to ${process.env.DOMAIN}, ${username}!</h1>
-        ${products.forEach((product)=>{
-          return `<p>Your Orders : ${products}</p>`
-        })}
+        <h1>Welcome to ${process.env.DOMAIN}, ${email}!</h1>
+          return <p>Your Orders : ${orders}</p>
       `;
   };
 
@@ -41,7 +39,7 @@ export const inform = async (email: string, username: string, products: string[]
     from: process.env.EMAIL,
     to: email,
     subject: "Your New Products",
-    html: emailTemplate({ products, username }),
+    html: emailTemplate({ orders, email }),
   };
 
   try {

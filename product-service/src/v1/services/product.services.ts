@@ -1,6 +1,7 @@
 import Product , {type IProductDocument } from "../models/product.model";
 import { connectAMQP } from "../../../config/amqp.connect";
 import logger from "../../../utils/logger";
+import { inform } from "../../../utils/mailer";
 
 
 export class ProductService {
@@ -75,6 +76,7 @@ export class ProductService {
                 logger.error("No data received from the queue");
                 }
             })
+            await inform(email , order)
             return order;
         } catch (error : any) {
             throw error;
