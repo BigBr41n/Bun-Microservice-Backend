@@ -1,0 +1,94 @@
+version: "3.8"
+
+services:
+  gateway:
+    build:
+      context: ./gateway/
+      dockerfile: Dockerfile
+    env_file:
+      - ./gateway/.env
+    container_name: gateway
+    restart: always
+    ports:
+      - "3000:3000"
+    command: bun run server.js
+    networks:
+      - ecommerce-net
+
+  auth-service:
+    build:
+      context: ./auth-service/
+      dockerfile: Dockerfile
+    env_file:
+      - ./auth-service/.env
+    container_name: auth-service
+    restart: always
+    expose:
+      - "3002"
+    command: bun run server.js
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-net
+
+  product-service:
+    build:
+      context: ./product-service/
+      dockerfile: Dockerfile
+    env_file:
+      - ./product-service/.env
+    container_name: product-service
+    restart: always
+    expose:
+      - "3004"
+    command: bun run server.js
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - ecommerce-net
+
+  order-service:
+    build:
+      context: ./orders-service/
+      dockerfile: Dockerfile
+    env_file:
+      - ./orders-service/.env
+    container_name: order-service
+    restart: always
+    expose:
+      - "3006"
+    command: bun run server.js
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - ecommerce-net
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    expose:
+      - "27017"
+    volumes:
+      - mongodb-volume:/data/db
+    networks:
+      - ecommerce-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-ecommerce
+    restart: always
+    expose:
+      - "5672"
+      - "15672"
+    networks:
+      - ecommerce-net
+
+volumes:
+  mongodb-volume:
+
+networks:
+  ecommerce-net:
+    driver: bridge
