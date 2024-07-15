@@ -3,7 +3,7 @@
 ## Overview
 
 microservices backend application using BUN ,
-Express.js and RabbitMQ for RPC
+Express.js and RabbitMQ as Message Broker
 
 ## Architecture
 
