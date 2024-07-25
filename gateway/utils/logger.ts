@@ -1,8 +1,11 @@
 import winston from "winston";
 import path from "path";
 import dotenv from "dotenv";
-import { fileURLToPath } from 'url';
-import {dirname} from 'path';
+import { fileURLToPath } from "url";
+import fs from "fs";
+import { dirname } from "path";
+import "winston-daily-rotate-file";
+
 dotenv.config();
 
 const logLevel = process.env.NODE_ENV === "production" ? "info" : "debug";
@@ -13,11 +16,15 @@ const customFormat = winston.format.printf(
   }
 );
 
-
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Ensure logs directory exists
+const logsDir = path.join(__dirname, "../logs");
+
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
 
 // Create a logger
 const logger = winston.createLogger({
@@ -35,13 +42,17 @@ const logger = winston.createLogger({
     new winston.transports.Console({
       handleExceptions: true, // Handle exceptions
     }),
-    new winston.transports.File({
-      filename: path.join(__dirname, "../logs", "error.log"),
+    new winston.transports.DailyRotateFile({
+      filename: path.join(logsDir, "error-%DATE%.log"),
       level: "error",
+      datePattern: "YYYY-MM-DD",
+      zippedArchive: true,
       handleExceptions: true,
     }),
-    new winston.transports.File({
-      filename: path.join(__dirname, "../logs", "combined.log"),
+    new winston.transports.DailyRotateFile({
+      filename: path.join(logsDir, "combined-%DATE%.log"),
+      datePattern: "YYYY-MM-DD",
+      zippedArchive: true,
       handleExceptions: true,
     }),
   ],
