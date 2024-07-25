@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3000;
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set('trust proxy', 1); 
 
 app.use(cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
@@ -31,11 +32,26 @@ app.use(helmet({
 
 
 
-//morgan logger
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan(':method :url :status :response-time ms - :res[content-length]'));
-}
 
+// Define log formats
+const devFormat = ':method :url :status :response-time ms - :res[content-length]';
+const prodFormat = 'combined';
+
+if (process.env.NODE_ENV === 'development') {
+    // Development: Use concise format and log directly to console or Winston
+    app.use(morgan(devFormat, {
+        stream: {
+            write: (message: string) => logger.info(message.trim())
+        }
+    }));
+} else {
+    // Production: Use detailed format and log to Winston
+    app.use(morgan(prodFormat, {
+        stream: {
+            write: (message: string) => logger.info(message.trim())
+        }
+    }));
+}
 
 
 //global rate limit
