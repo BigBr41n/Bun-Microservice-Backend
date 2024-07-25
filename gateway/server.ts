@@ -5,6 +5,7 @@ import morgan from'morgan';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv'
 import globalError from './utils/globalError';
+import { logger } from './utils/logger';
 import { globalLimiter, authLimiter } from './middlewares/rate-limiter';
 dotenv.config(); 
 
@@ -108,7 +109,7 @@ app.use(globalError);
 
 // Server settings
 const server = app.listen(PORT, () => {
-    console.log(`Gateway server is running on http://localhost:${PORT}`);
+    logger.info(`Gateway Server is running on http://localhost:${PORT}`);
 });
 
 
