@@ -128,6 +128,14 @@ const server = app.listen(PORT, () => {
     logger.info(`Gateway Server is running on http://localhost:${PORT}`);
 });
 
+process.on('SIGINT', () => {
+  logger.warn('Received SIGTERM signal. Shutting down gracefully...');
+  server.close(() => {
+    logger.info('Server has been closed.');
+    process.exit(0);
+  });
+});
+
 
 server.keepAliveTimeout = 65000; 
 server.maxHeadersCount = 100;
