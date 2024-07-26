@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type NextFunction, type Request , type Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from'morgan';
@@ -7,6 +7,8 @@ import dotenv from 'dotenv'
 import globalError from './utils/globalError';
 import { logger } from './utils/logger';
 import { globalLimiter, authLimiter } from './middlewares/rate-limiter';
+import swaggerUi from 'swagger-ui-express';
+import { combineSwaggerDocs } from './utils/combineSwaggerDocs';
 dotenv.config(); 
 
 
@@ -116,6 +118,18 @@ app.use('/api/v1/orders', createProxyMiddleware({
       },
     },
 }));
+
+
+
+// Serve Swagger UI with combined docs
+app.use('/api-docs', async (req : Request, res :Response , next : NextFunction) => {
+  try {
+    const swaggerDocs = await combineSwaggerDocs();
+    swaggerUi.setup(swaggerDocs)(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+}, swaggerUi.serve);
 
 
 
