@@ -1,11 +1,12 @@
-import express, { type ErrorRequestHandler } from "express";
+import express, { type ErrorRequestHandler , type Request , type Response } from "express";
 import dotenv from "dotenv";
 import {connectDB} from './config/db.connect';
 import logger from "./utils/logger";
 import globalError from "./utils/globalError";
 import unknownRoute from "./utils/unknownRoute";
 import productRoutes from './src/routes';
-
+import swaggerSpec from "./config/swaggerConfig";
+import swaggerUi from 'swagger-ui-express';
 
 dotenv.config();
 
@@ -23,7 +24,12 @@ app.use(express.urlencoded({ extended: true }));
 //routes
 app.use("/v1", productRoutes);
 
-
+// Swagger setup
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api-docs.json', (req : Request, res : Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
 
 //unknown route 
 app.use(unknownRoute)
