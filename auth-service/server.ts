@@ -1,4 +1,6 @@
 import express, { type ErrorRequestHandler, type Request, type Response } from "express";
+import { requestCount, requestDuration, startMetricsServer } from './utils/metrics';
+import responseTime from 'response-time';
 import dotenv from "dotenv";
 import {connectDB} from './config/db.connect';
 import logger from "./utils/logger";
@@ -19,6 +21,24 @@ const PORT = process.env.PORT || 3002;
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+
+//responseTime tracker
+app.use(responseTime((req: Request, res: Response, time: number) => {
+  if ((req as any).route?.path) {
+    const labels = {
+      method: req.method,
+      endpoint: (req as any).route.path,
+      status_code: res.statusCode.toString(),
+    };
+
+    requestCount.inc(labels);
+
+    requestDuration.observe(labels, time / 1000); 
+  }
+}))
+
 
 
 
@@ -52,6 +72,8 @@ app.use(globalError as ErrorRequestHandler);
         logger.info(`Auth Server is running on http://localhost:${PORT}`);
       });
 
+      startMetricsServer();  
+
       server.keepAliveTimeout = 3000; 
   
       process.on('SIGTERM', () => {
@@ -66,7 +88,7 @@ app.use(globalError as ErrorRequestHandler);
       logger.error('Failed to start server:', error);
       process.exit(1);
     }
-})()
+})();
   
 
 
