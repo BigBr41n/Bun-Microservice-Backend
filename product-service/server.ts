@@ -7,6 +7,9 @@ import unknownRoute from "./utils/unknownRoute";
 import productRoutes from './src/routes';
 import swaggerSpec from "./config/swaggerConfig";
 import swaggerUi from 'swagger-ui-express';
+import responseTime from'response-time';
+import { requestCount, requestDuration, startMetricsServer } from "./utils/metrics";
+
 
 dotenv.config();
 
@@ -19,6 +22,24 @@ const PORT = process.env.PORT || 3002;
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+//metrics 
+app.use(responseTime((req: Request, res: Response, time: number) => {
+  if ((req as any).route?.path) {
+    const labels = {
+      method: req.method,
+      endpoint: (req as any).route.path,
+      status_code: res.statusCode.toString(),
+    };
+
+    requestCount.inc(labels);
+
+    requestDuration.observe(labels, time / 1000); 
+  }
+}))
+
+
 
 
 //routes
@@ -45,6 +66,8 @@ app.use(globalError as ErrorRequestHandler);
       const server = app.listen(PORT, () => {
         logger.info(`Products Server is running on http://localhost:${PORT}`);
       });
+
+      startMetricsServer();
 
       server.keepAliveTimeout = 3000; 
   
