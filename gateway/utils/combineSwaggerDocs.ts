@@ -5,9 +5,9 @@ import axios from 'axios';
 export async function combineSwaggerDocs() {
   try {
     // Fetch Swagger docs from microservices
-    const authDocs = await axios.get(`http://localhost:${process.env.AUTH_PORT}/swagger.json`);
-    const productDocs = await axios.get(`http://localhost:${process.env.PRODUCT_PORT}/swagger.json`);
-    const orderDocs = await axios.get(`http://localhost:${process.env.ORDER_PORT}/swagger.json`);
+    const authDocs = await axios.get(`http://localhost:${process.env.AUTH_PORT}/api-docs.json`);
+    const productDocs = await axios.get(`http://localhost:${process.env.PRODUCT_PORT}/api-docs.json`);
+    const orderDocs = await axios.get(`http://localhost:${process.env.ORDER_PORT}/api-docs.json`);
 
     // Combine docs (simple merge example, adjust as needed)
     const combinedDocs = {
