@@ -7,4 +7,5 @@ COPY . ./
 RUN bun install
 
 EXPOSE 3002
-CMD ["bun", "run", "server.js"]
+EXPOSE 9100
+CMD ["bun", "run", "server.ts"]

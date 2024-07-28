@@ -11,7 +11,6 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    command: bun run server.js
     networks:
       - ecommerce-net
 
@@ -25,7 +24,6 @@ services:
     restart: always
     expose:
       - "3002"
-    command: bun run server.js
     depends_on:
       - mongodb
     networks:
@@ -41,7 +39,6 @@ services:
     restart: always
     expose:
       - "3004"
-    command: bun run server.js
     depends_on:
       - mongodb
       - rabbitmq
@@ -58,7 +55,6 @@ services:
     restart: always
     expose:
       - "3006"
-    command: bun run server.js
     depends_on:
       - mongodb
       - rabbitmq
@@ -66,7 +62,7 @@ services:
       - ecommerce-net
 
   mongodb:
-    image: mongo:latest
+    image: mongo
     container_name: mongodb
     restart: always
     expose:
@@ -80,9 +76,9 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq-ecommerce
     restart: always
-    expose:
-      - "5672"
-      - "15672"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - ecommerce-net
 
