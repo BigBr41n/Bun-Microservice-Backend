@@ -44,7 +44,7 @@ export const sendActivationEmail = async (
     return `
         <h1>Welcome to ${process.env.DOMAIN}, ${username}!</h1>
         <p>Click the link below to activate your account:</p>
-        <a href="http://${process.env.DOMAIN}/api/v1/auth/verify?token=${activationToken}">Activate Account</a>
+        <a href="http://${process.env.DOMAIN}/api/v1/auth/activate/${activationToken}">Activate Account</a>
       `;
   };
 

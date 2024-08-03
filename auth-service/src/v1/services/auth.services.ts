@@ -59,6 +59,7 @@ class AuthService {
     try {
       const user = await User.findOne({ email: userData.email });
       if (!user) throw new ApiError("User not found!", 404);
+      console.log(user)
 
       const isMatch = await bcrypt.compare(userData.password, user.password);
       if (!isMatch) throw new ApiError("Invalid credentials!", 401);
@@ -68,7 +69,11 @@ class AuthService {
       }
 
       user.OTP = generateOTP(8);
+      user.OTPEx = Date.now() + 1000 * 60 * 60;
       await user.save();
+      console.log("user OTP : " + user.OTP)
+
+      await sendOTP(user.email, user.name ,user.OTP);
 
       return "OTP sent"
     } catch (err: any) {
@@ -93,8 +98,10 @@ class AuthService {
     try {
       const user = await User.findOne({
         OTP,
-        OTPEx: { $gt: new Date() },
+        OTPEx: { $gt: Date.now() },
       }).lean();
+
+      console.log("the use : " + user?.OTP );
 
       if (!user) throw new ApiError('OTP invalid; please Login Again', 401);
 

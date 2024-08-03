@@ -5,14 +5,15 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
-  verified: boolean;
+  verified?: boolean;
   activationToken?: string;
   activeExpires?: number;
   OTP?: string;
+  OTPEx?: number;
 }
 
 export interface IUserDocument extends IUser, Document {
-  _id: mongoose.Types.ObjectId;
+  _id: mongoose.Schema.Types.ObjectId;
 }
 
 const userSchema = new mongoose.Schema<IUserDocument>(
@@ -35,9 +36,11 @@ const userSchema = new mongoose.Schema<IUserDocument>(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
     },
+    verified: { type: Boolean, default: false },
     activationToken: { type: String },
     activeExpires: { type: Number },
     OTP: { type: String },
+    OTPEx : { type: Number},
   },
   {
     timestamps: true,
