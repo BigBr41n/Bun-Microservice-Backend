@@ -44,7 +44,7 @@ export const inform = async (email: string, orders: any) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    logger.info(`OTP sent to  ${email}`);
+    logger.info(`Message sent to  ${email}`);
   } catch (err) {
     logger.error(err);
     throw new ApiError("Internal server Error", 500);

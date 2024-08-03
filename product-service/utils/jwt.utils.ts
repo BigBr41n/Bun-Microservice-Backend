@@ -1,12 +1,7 @@
-import jwt, { type VerifyErrors } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import logger from "./logger";
 import fs from "fs";
 import path from "path";
-
-interface ObjectToSign {
-  id: string;
-}
-
 
 const publicKey = fs.readFileSync(
   path.join(__dirname, "..", "public.key"),
@@ -14,18 +9,21 @@ const publicKey = fs.readFileSync(
 );
 
 
-export function verifyJwt(token: string): any {
-  jwt.verify(
-    token,
-    publicKey,
-    { algorithms: ["RS256"] },
-    (error: VerifyErrors | null, decoded: any | undefined) => {
-      if (error) {
-        logger.error(error);
-        return { valid: false, expired: true };
-      } else {
-        return { valid: true, expired: false, decoded };
+
+export function verifyJwt(token: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    jwt.verify(
+      token,
+      publicKey,
+      { algorithms: ["RS256"] },
+      (error, decoded) => {
+        if (error) {
+          logger.error(error);
+          resolve({ valid: false, expired: true });
+        } else {
+          resolve({ valid: true, expired: false, decoded });
+        }
       }
-    }
-  );
+    );
+  });
 }

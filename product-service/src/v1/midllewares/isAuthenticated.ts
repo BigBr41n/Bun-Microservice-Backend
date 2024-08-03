@@ -3,11 +3,11 @@ import { verifyJwt } from "../../../utils/jwt.utils";
 
 
 
-export const isAuth = (req: Request, res: Response, next: NextFunction) => {
+export const isAuth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (token) {
         try {
-            const result = verifyJwt(token);
+            const result = await verifyJwt(token.toString());
             if(result.valid) {
                 next();
             }
